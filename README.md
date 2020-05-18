@@ -1,4 +1,4 @@
-# Nataf_Transformation
+## Nataf Transformation
 
 This code performs Nataf transfomation of two correlated random variables by
 approximating their correlation in the standard normal domain (y-space) using 
