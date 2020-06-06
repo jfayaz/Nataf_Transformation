@@ -50,13 +50,13 @@ OUTPUT:
 ##### ================== INPUTS  ================== #####
 
 ### Marginal Distribution of Random Variable 1
-Dist1 = 'gm';
+Dist1 = 'LN';
 
 ### Marginal Distribution of Random Variable 2
-Dist2 = 'LN';
+Dist2 = 'gm';
 
 ### Correlation between Random Variable 1 and Random Variable 2 in orginal domain
-Corr  = 0.9;
+Corr  = 0.7;
 
 ### Coefficient of Variation (CoV) of Random Variable 1
 CoV1  = 1;
@@ -421,11 +421,24 @@ def Det_Coeff(Dist1,Dist2,Corr,CoV1,CoV2):
     
     return a,b,c,d,e,f,g,h,k,l
 
-### Computing the Coefficients of Polynomial 
-[a,b,c,d,e,f,g,h,k,l] = Det_Coeff(Dist1,Dist2,Corr,CoV1,CoV2)
-
-### Ratio of Correlations
-R       = a + b*CoV1 + c*CoV1**2 + d*Corr + e*Corr**2 + f*Corr*CoV1 + g*CoV2 + h*CoV2**2 + k*Corr*CoV2 + l*CoV1*CoV2
+try:
+    print('Obtaining the Transformation...\n')
+    ### Computing the Coefficients of Polynomial 
+    [a,b,c,d,e,f,g,h,k,l] = Det_Coeff(Dist1,Dist2,Corr,CoV1,CoV2)    
+    ### Ratio of Correlations
+    R       = a + b*CoV1 + c*CoV1**2 + d*Corr + e*Corr**2 + f*Corr*CoV1 + g*CoV2 + h*CoV2**2 + k*Corr*CoV2 + l*CoV1*CoV2
+except:
+    try:
+        print('Transformation not found in the given order. Reversing the order of provided distributions to find the transformation...\n')
+        ### Computing the Coefficients of Polynomial 
+        [a,b,c,d,e,f,g,h,k,l] = Det_Coeff(Dist2,Dist1,Corr,CoV2,CoV1)    
+        ### Ratio of Correlations
+        R       = a + b*CoV2 + c*CoV2**2 + d*Corr + e*Corr**2 + f*Corr*CoV2 + g*CoV1 + h*CoV1**2 + k*Corr*CoV1 + l*CoV2*CoV1
+    except:
+        raise ValueError('Transformation not found in both orders! Distribution : "'+Dist1+'" (Dist1) cannot be used with Distribution: "'+Dist2+'" (Dist2). Check Melchers (2002) for more details.')
 
 ### Correlations in Standard Normal Space (y-space)
 CorrY  = R*Corr
+
+print('Orginal Correlation = '+str(np.round(Corr,3)))
+print('Transformed Correlation = '+str(np.round(CorrY,3)))
